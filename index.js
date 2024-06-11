@@ -7,6 +7,7 @@ const locationRoutes = require('./routes/locations');
 const locationTypeRoutes = require('./routes/locationTypes');
 const activityRoutes = require('./routes/activities');
 const holidayPackageRoutes = require('./routes/holidayPackages');
+const bookingRoutes = require('./routes/bookings');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/locations', locationRoutes);
 app.use('/locationTypes', locationTypeRoutes);
 app.use('/activities', activityRoutes);
 app.use('/holidayPackages', holidayPackageRoutes);
+app.use('/bookings', bookingRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
