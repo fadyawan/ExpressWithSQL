@@ -38,32 +38,35 @@ exports.createBooking = async (req, res) => {
     }
 };
 
-exports.getAllBookings = (req, res) => {
-    const query = `
-    SELECT 
-      Booking.ID, 
-      Booking.Customer_ID, 
-      Booking.Package_ID, 
-      Booking.Date_Start, 
-      Booking.Date_End, 
-      Booking.All_Inclusive, 
-      Customer.First_Name, 
-      Customer.Surname, 
-      Holiday_Package.Name AS Package_Name, 
-      Hotel.Name AS Hotel_Name
-    FROM Booking
-    JOIN Customer ON Booking.Customer_ID = Customer.ID
-    JOIN Holiday_Package ON Booking.Package_ID = Holiday_Package.ID
-    JOIN Hotel ON Holiday_Package.Hotel_ID = Hotel.ID
-  `;
+exports.getAllBookings = async (req, res) => {
+    try {
+        const [bookings] = await db.query(`
+            SELECT 
+                b.ID AS Booking_ID,
+                b.Customer_ID,
+                b.Package_ID,
+                b.Date_Start,
+                b.Date_End,
+                b.All_Inclusive,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'Activity_Type', a.Activity_Type,
+                        'Hotel_ID', a.Hotel_ID,
+                        'For_Kids', a.For_Kids
+                    )
+                ) AS Activities
+            FROM 
+                Booking b
+                LEFT JOIN Activity a ON a.Hotel_ID = (SELECT Hotel_ID FROM Holiday_Package WHERE ID = b.Package_ID)
+            GROUP BY 
+                b.ID
+        `);
 
-    db.query(query, (err, results) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-
-        res.status(200).json(results);
-    });
+        res.status(200).json(bookings);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while retrieving the bookings' });
+    }
 };
 
 exports.editBooking = (req, res) => {
