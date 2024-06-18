@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const customerRoutes = require('./routes/customers');
 const hotelRoutes = require('./routes/hotels');
@@ -12,6 +13,7 @@ const bookingRoutes = require('./routes/bookings');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Hotel Service API');
@@ -25,7 +27,7 @@ app.use('/activities', activityRoutes);
 app.use('/holidayPackages', holidayPackageRoutes);
 app.use('/bookings', bookingRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
