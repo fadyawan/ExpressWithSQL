@@ -46,7 +46,7 @@ const EditBookingComponent: React.FC = () => {
         }
     };
 
-    const handlePackageChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+    const handlePackageChange = (e: ChangeEvent<{ value: unknown }>) => {
         const packageId = e.target.value as number;
         setBooking({ ...booking!, Package_ID: packageId });
     };
@@ -62,7 +62,7 @@ const EditBookingComponent: React.FC = () => {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!booking) return;
+        if (!booking || !bookingId) return;
 
         try {
             await updateData(`bookings/${bookingId}`, booking);
