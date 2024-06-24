@@ -125,3 +125,17 @@ exports.editBooking = (req, res) => {
         });
     });
 };
+
+exports.deleteBooking = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await db.query('DELETE FROM Activity WHERE Hotel_ID = (SELECT Hotel_ID FROM Holiday_Package WHERE ID = (SELECT Package_ID FROM Booking WHERE ID = ?))', [id]);
+        await db.query('DELETE FROM Booking WHERE ID = ?', [id]);
+
+        res.status(200).json({ message: 'Booking deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while deleting the booking' });
+    }
+};
