@@ -40,6 +40,7 @@ exports.createBooking = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
     try {
+        console.log('hello')
         const [bookings] = await db.query(`
             SELECT 
                 b.ID AS Booking_ID,
@@ -69,6 +70,46 @@ exports.getAllBookings = async (req, res) => {
     }
 };
 
+exports.getBookingById = async (req, res) => {
+    const { id } = req.params;
+    console.log('meowmeow')
+    
+    try {
+        const [booking] = await db.query(`
+            SELECT 
+                b.ID AS Booking_ID,
+                b.Customer_ID,
+                b.Package_ID,
+                b.Date_Start,
+                b.Date_End,
+                b.All_Inclusive,
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'Activity_Type', a.Activity_Type,
+                        'Hotel_ID', a.Hotel_ID,
+                        'For_Kids', a.For_Kids
+                    )
+                ) AS Activities
+            FROM 
+                Booking b
+                LEFT JOIN Activity a ON a.Hotel_ID = (SELECT Hotel_ID FROM Holiday_Package WHERE ID = b.Package_ID)
+            WHERE 
+                b.ID = ?
+            GROUP BY 
+                b.ID
+        `, [id]);
+
+        if (booking.length === 0) {
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+
+        res.status(200).json(booking[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while retrieving the booking' });
+    }
+};
+
 exports.editBooking = (req, res) => {
     const { id } = req.params;
     const { Customer_ID, Package_ID, Date_Start, All_Inclusive, Activities } = req.body;
@@ -88,10 +129,10 @@ exports.editBooking = (req, res) => {
         Date_End.setDate(Date_End.getDate() + Number_Of_Nights);
 
         const updateBookingQuery = `
-      UPDATE Booking 
-      SET Customer_ID = ?, Package_ID = ?, Date_Start = ?, Date_End = ?, All_Inclusive = ? 
-      WHERE ID = ?
-    `;
+            UPDATE Booking 
+            SET Customer_ID = ?, Package_ID = ?, Date_Start = ?, Date_End = ?, All_Inclusive = ? 
+            WHERE ID = ?
+        `;
         db.query(updateBookingQuery, [Customer_ID, Package_ID, Date_Start, Date_End, All_Inclusive, id], (err, bookingResult) => {
             if (err) {
                 return res.status(500).send(err);
@@ -106,9 +147,9 @@ exports.editBooking = (req, res) => {
                 if (Activities && Activities.length > 0) {
                     Activities.forEach((activity, index) => {
                         const activityQuery = `
-              INSERT INTO Activity (Activity_Type, Hotel_ID, For_Kids) 
-              VALUES (?, ?, ?)
-            `;
+                            INSERT INTO Activity (Activity_Type, Hotel_ID, For_Kids) 
+                            VALUES (?, ?, ?)
+                        `;
                         db.query(activityQuery, [activity.Activity_Type, Hotel_ID, activity.For_Kids], (err, result) => {
                             if (err) {
                                 return res.status(500).send(err);

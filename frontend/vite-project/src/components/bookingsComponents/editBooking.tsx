@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { TextField, Checkbox, FormControlLabel, Button, Select, MenuItem, CircularProgress } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import { fetchData, updateData } from '../services/dataService';
+import { fetchData, updateData } from '../../services/dataService';
 
 interface Booking {
     Booking_ID: number;
@@ -10,10 +10,16 @@ interface Booking {
     Activities: any[];
 }
 
+interface Activity {
+    ID: number;
+    Activity_Type: string;
+}
+
 const EditBookingComponent: React.FC = () => {
     const [bookingId, setBookingId] = useState<number | null>(null);
     const [booking, setBooking] = useState<Booking | null>(null);
     const [packages, setPackages] = useState<any[]>([]);
+    const [availableActivities, setAvailableActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -25,7 +31,18 @@ const EditBookingComponent: React.FC = () => {
                 console.error('Error fetching packages:', error);
             }
         };
+
+        const fetchActivities = async () => {
+            try {
+                const data = await fetchData('activities');
+                setAvailableActivities(data);
+            } catch (error) {
+                console.error('Error fetching activities:', error);
+            }
+        };
+
         fetchPackages();
+        fetchActivities();
     }, []);
 
     const handleBookingIdChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +55,7 @@ const EditBookingComponent: React.FC = () => {
         setLoading(true);
         try {
             const data = await fetchData(`bookings/${bookingId}`);
+            data.All_Inclusive = Boolean(data.All_Inclusive);
             setBooking(data);
         } catch (error) {
             console.error('Error fetching booking:', error);
@@ -56,7 +74,7 @@ const EditBookingComponent: React.FC = () => {
         setBooking({ ...booking!, All_Inclusive: checked });
     };
 
-    const handleActivitiesChange = (activities: any[]) => {
+    const handleActivitiesChange = (activities: Activity[]) => {
         setBooking({ ...booking!, Activities: activities });
     };
 
@@ -130,10 +148,17 @@ const EditBookingComponent: React.FC = () => {
                         <div style={{ marginBottom: '10px' }}>
                             <Autocomplete
                                 multiple
-                                options={[]}
-                                getOptionLabel={(option: any) => option.Activity_Type}
-                                onChange={(e, value) => handleActivitiesChange(value)}
-                                renderInput={(params) => <TextField {...params} label="Activities" fullWidth />}
+                                options={availableActivities}
+                                getOptionLabel={(option) => option.Activity_Type}
+                                onChange={(e, value) => handleActivitiesChange(value as Activity[])}
+                                renderOption={(props, option) => (
+                                    <li {...props} key={option.ID}>
+                                        {option.Activity_Type}
+                                    </li>
+                                )}
+                                renderInput={(params) => (
+                                    <TextField {...params} label="Select Activities" margin="normal" fullWidth />
+                                )}
                             />
                         </div>
 

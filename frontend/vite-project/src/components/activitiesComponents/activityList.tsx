@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
-import { fetchData } from '../services/dataService';
+import { fetchData } from '../../services/dataService';
 
 const activityColumns = [
   { field: 'id', headerName: 'ID', width: 90 },

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
-import { fetchData } from '../services/dataService';
+import { fetchData } from '../../services/dataService';
 
 const bookingColumns = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -37,15 +37,15 @@ function BookingsList() {
         rows={bookingRows}
         columns={bookingColumns}
         initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
             },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
+          },
+        }}
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
       />
       <Button
         variant="contained"

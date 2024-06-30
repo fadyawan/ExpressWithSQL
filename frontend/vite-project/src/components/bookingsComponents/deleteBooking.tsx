@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField } from '@mui/material';
-import { deleteData } from '../services/dataService';
+import { deleteData } from '../../services/dataService';
 
 function DeleteBooking() {
   const [bookingId, setBookingId] = useState('');

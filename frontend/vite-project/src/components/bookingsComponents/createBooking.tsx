@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TextField, Button, Autocomplete, Checkbox, FormControlLabel } from '@mui/material';
-import { fetchData } from '../services/dataService';
+import { fetchData } from '../../services/dataService';
 
 interface Hotel {
   ID: number;
