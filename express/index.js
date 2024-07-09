@@ -9,11 +9,23 @@ const locationTypeRoutes = require('./routes/locationTypes');
 const activityRoutes = require('./routes/activities');
 const holidayPackageRoutes = require('./routes/holidayPackages');
 const bookingRoutes = require('./routes/bookings');
+const loginRoutes = require('./routes/loginRoutes')
 
 const app = express();
+const allowedOrigins = ['https://localhost:3001/'];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Hotel Service API');
@@ -26,6 +38,7 @@ app.use('/locationTypes', locationTypeRoutes);
 app.use('/activities', activityRoutes);
 app.use('/holidayPackages', holidayPackageRoutes);
 app.use('/bookings', bookingRoutes);
+app.use('/login', loginRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
