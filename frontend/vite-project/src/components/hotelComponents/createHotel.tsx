@@ -86,13 +86,13 @@ function CreateHotel() {
         />
         <TextField
           label="Price per Night"
-          type="number" // Use type="number" for numeric input
+          type="number"
           value={pricePerNight}
           onChange={(e) => setPricePerNight(parseInt(e.target.value))}
           fullWidth
           margin="normal"
           required
-          InputProps={{ inputProps: { min: 0 } }} // Optional: Set minimum value
+          InputProps={{ inputProps: { min: 0 } }}
         />
         <Button
           type="submit"

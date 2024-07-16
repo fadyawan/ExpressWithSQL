@@ -9,7 +9,7 @@ const locationTypeRoutes = require('./routes/locationTypes');
 const activityRoutes = require('./routes/activities');
 const holidayPackageRoutes = require('./routes/holidayPackages');
 const bookingRoutes = require('./routes/bookings');
-const loginRoutes = require('./routes/loginRoutes')
+const userRoutes = require('./routes/userRoutes')
 
 const app = express();
 const allowedOrigins = ['https://localhost:3001/'];
@@ -25,7 +25,7 @@ const corsOptions = {
 };
 
 app.use(bodyParser.json());
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Hotel Service API');
@@ -38,7 +38,7 @@ app.use('/locationTypes', locationTypeRoutes);
 app.use('/activities', activityRoutes);
 app.use('/holidayPackages', holidayPackageRoutes);
 app.use('/bookings', bookingRoutes);
-app.use('/login', loginRoutes);
+app.use('/user', userRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

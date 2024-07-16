@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 import { fetchData } from '../../services/dataService';
 
 const bookingColumns = [
@@ -13,6 +14,7 @@ const bookingColumns = [
 
 function BookingsList() {
   const [bookingRows, setBookingRows] = useState([]);
+  const navigate = useNavigate();
 
   const handleLoadBookings = async () => {
     const data = await fetchData('bookings');
@@ -28,6 +30,10 @@ function BookingsList() {
 
   const handleClearBookings = () => {
     setBookingRows([]);
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -62,6 +68,30 @@ function BookingsList() {
         style={{ margin: '10px' }}
       >
         Clear Bookings
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => handleNavigate('/bookings/create')}
+        style={{ margin: '10px' }}
+      >
+        Create Booking
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => handleNavigate('/bookings/edit/:id')}
+        style={{ margin: '10px' }}
+      >
+        Edit Booking
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => handleNavigate('/bookings/delete/:id')}
+        style={{ margin: '10px' }}
+      >
+        Delete Booking
       </Button>
     </div>
   );

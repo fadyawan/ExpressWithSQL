@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
+import { To, useNavigate } from 'react-router-dom';
 import { fetchData } from '../../services/dataService';
 
 const hotelColumns = [
@@ -10,8 +11,17 @@ const hotelColumns = [
   { field: 'price_per_night', headerName: 'Price Per Night', width: 150 },
 ];
 
-function hotelList() {
+function HotelList() {
   const [hotelRows, setHotelRows] = useState([]);
+  const navigate = useNavigate();
+  const [accessLevel, setAccessLevel] = useState<string>('');
+
+  useEffect(() => {
+    const level = localStorage.getItem('accessLevel') || '';
+    setAccessLevel(level);
+  }, []);
+
+  console.log(localStorage.getItem('accessLevel'))
 
   const handleLoadHotels = async () => {
     const data = await fetchData('hotels');
@@ -26,6 +36,10 @@ function hotelList() {
 
   const handleClearHotels = () => {
     setHotelRows([]);
+  };
+
+  const handleNavigate = (path: To) => {
+    navigate(path);
   };
 
   return (
@@ -51,8 +65,22 @@ function hotelList() {
       <Button variant="contained" color="secondary" onClick={handleClearHotels} style={{ margin: '10px' }}>
         Clear Hotels
       </Button>
+
+      {accessLevel === 'admin' && (
+        <>
+          <Button variant="contained" color="primary" onClick={() => handleNavigate('/hotels/create')} style={{ margin: '10px' }}>
+            Create Hotel
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => handleNavigate('/hotels/edit/:id')} style={{ margin: '10px' }}>
+            Edit Hotel
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => handleNavigate('/hotels/delete/:id')} style={{ margin: '10px' }}>
+            Delete Hotel
+          </Button>
+        </>
+      )}
     </div>
   );
 }
 
-export default hotelList;
+export default HotelList;

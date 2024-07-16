@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
+import { useNavigate } from 'react-router-dom';
 import { fetchData } from '../../services/dataService';
 
 const customerColumns = [
+  { field: 'id', headerName: 'ID', width: 90 },
   { field: 'first_name', headerName: 'First Name', width: 150 },
   { field: 'surname', headerName: 'Surname', width: 150 },
   { field: 'gender', headerName: 'Gender', width: 100 },
@@ -12,6 +14,7 @@ const customerColumns = [
 
 function CustomerList() {
   const [customerRows, setCustomerRows] = useState([]);
+  const navigate = useNavigate();
 
   const handleLoadCustomers = async () => {
     const data = await fetchData('customers');
@@ -27,6 +30,10 @@ function CustomerList() {
 
   const handleClearCustomers = () => {
     setCustomerRows([]);
+  };
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -51,6 +58,15 @@ function CustomerList() {
       </Button>
       <Button variant="contained" color="secondary" onClick={handleClearCustomers} style={{ margin: '10px' }}>
         Clear Customers
+      </Button>
+      <Button variant="contained" color="primary" onClick={() => handleNavigate('/customers/create')} style={{ margin: '10px' }}>
+        Create Customer
+      </Button>
+      <Button variant="contained" color="primary" onClick={() => handleNavigate('/customers/edit/:id')} style={{ margin: '10px' }}>
+        Edit Customer
+      </Button>
+      <Button variant="contained" color="primary" onClick={() => handleNavigate('/customers/delete/:id')} style={{ margin: '10px' }}>
+        Delete Customer
       </Button>
     </div>
   );

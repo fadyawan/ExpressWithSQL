@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
 const saltRounds = 10;
+const JWT_SECRET = 'your_jwt_secret';
 
-// Function to register a new user
 exports.registerUser = async (req, res) => {
   const { username, password, accessLevel } = req.body;
 
@@ -18,9 +19,8 @@ exports.registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     const sql = 'INSERT INTO Users (Username, Password, AccessLevel) VALUES (?, ?, ?)';
-    const [result] = await db.query(sql, [username, hashedPassword, accessLevel]);
+    await db.query(sql, [username, hashedPassword, accessLevel]);
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
@@ -29,7 +29,6 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// Function to authenticate a user
 exports.loginUser = async (req, res) => {
   const { username, password } = req.body;
 
@@ -48,7 +47,13 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ error: 'Invalid username or password' });
     }
 
-    res.json({ message: 'Login successful', user: { id: user[0].ID, username: user[0].Username, accessLevel: user[0].AccessLevel } });
+    const token = jwt.sign(
+      { id: user[0].ID, username: user[0].Username, accessLevel: user[0].AccessLevel },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ message: 'Login successful', token, accessLevel: user[0].AccessLevel, username: user[0].Username });
   } catch (err) {
     console.error('Error logging in user:', err);
     res.status(500).json({ error: 'Database error' });
