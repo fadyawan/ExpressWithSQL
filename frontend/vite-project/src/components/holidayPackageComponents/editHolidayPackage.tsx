@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField } from '@mui/material';
-import { fetchData, updateData } from '../../services/dataService';
+import { fetchData } from '../../services/dataService';
 
 interface HolidayPackage {
   id: number;
@@ -54,7 +54,6 @@ const EditHolidayPackage = () => {
     };
 
     try {
-      await updateData(`holidayPackages/${holidayPackage.id}`, updatedPackage);
       alert('Holiday package updated successfully!');
     } catch (error) {
       console.error('Error updating holiday package:', error);

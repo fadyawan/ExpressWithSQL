@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextField, Checkbox, FormControlLabel } from '@mui/material';
-import { fetchData, updateData } from '../../services/dataService';
+import axios from 'axios';
+import { deleteData } from '../../services/dataService';
 
 interface Activity {
   ID: number;
@@ -19,7 +20,8 @@ const EditActivity = () => {
 
   const handleSearch = async () => {
     try {
-      const fetchedActivity = await fetchData(`activities/name/${searchTerm}`);
+      const response = await axios.get(`http://localhost:3001/activities/name/${searchTerm}`);
+      const fetchedActivity = response.data;
       setActivity(fetchedActivity);
       setName(fetchedActivity.Name);
       setHotelId(fetchedActivity.Hotel_ID);
@@ -50,11 +52,31 @@ const EditActivity = () => {
     };
 
     try {
-      await updateData(`activities/${activity.ID}`, updatedActivity);
+      await axios.put(`http://localhost:3001/activities/${activity.ID}`, updatedActivity);
       alert('Activity updated successfully!');
     } catch (error) {
       console.error('Error updating activity:', error);
       alert('An error occurred while updating the activity.');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!activity) {
+      alert('No activity selected.');
+      return;
+    }
+
+    try {
+      await deleteData(`activities/${activity.ID}`);
+      alert('Activity deleted successfully!');
+      setActivity(null);
+      setName('');
+      setHotelId(null);
+      setForKids(false);
+      setError(null);
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      alert('An error occurred while deleting the activity.');
     }
   };
 
@@ -102,6 +124,9 @@ const EditActivity = () => {
           />
           <Button variant="contained" color="primary" onClick={handleUpdate} style={{ marginTop: '20px' }}>
             Update Activity
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleDelete} style={{ marginTop: '20px' }}>
+            Delete Activity
           </Button>
         </>
       )}

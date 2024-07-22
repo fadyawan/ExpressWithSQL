@@ -21,8 +21,6 @@ function HotelList() {
     setAccessLevel(level);
   }, []);
 
-  console.log(localStorage.getItem('accessLevel'))
-
   const handleLoadHotels = async () => {
     const data = await fetchData('hotels');
     const mappedData = data.map((item: { ID: any; Name: any; Location_ID: any; Price_Per_Night: any; }) => ({

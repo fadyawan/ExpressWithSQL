@@ -40,7 +40,6 @@ exports.createBooking = async (req, res) => {
 
 exports.getAllBookings = async (req, res) => {
     try {
-        console.log('hello')
         const [bookings] = await db.query(`
             SELECT 
                 b.ID AS Booking_ID,
@@ -72,7 +71,6 @@ exports.getAllBookings = async (req, res) => {
 
 exports.getBookingById = async (req, res) => {
     const { id } = req.params;
-    console.log('meowmeow')
     
     try {
         const [booking] = await db.query(`

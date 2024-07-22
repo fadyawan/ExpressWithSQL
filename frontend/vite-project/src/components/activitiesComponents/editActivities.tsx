@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Checkbox, FormControlLabel, Autocomplete } from '@mui/material';
-import { fetchData, updateData } from '../../services/dataService';
+import axios from 'axios';
+import { fetchData } from '../../services/dataService';
 
 interface Hotel {
   ID: number;
@@ -13,6 +14,8 @@ interface Activity {
   Hotel_ID: number;
   Is_For_Kids: boolean;
 }
+
+const API_BASE_URL = 'http://localhost:3001';
 
 function EditActivity() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -74,9 +77,9 @@ function EditActivity() {
     };
 
     try {
-      const response = await updateData(`activities/${activity.ID}`, updatedActivityData);
+      const response = await axios.put(`${API_BASE_URL}/activities/${activity.ID}`, updatedActivityData);
 
-      if (response) {
+      if (response.data) {
         alert('Activity updated successfully!');
         setActivity(null);
         setSearchTerm('');

@@ -21,13 +21,3 @@ export const deleteData = async (endpoint: string) => {
     throw new Error('Failed to delete data');
   }
 };
-
-export const updateData = async (endpoint: string, data: any, config?: AxiosRequestConfig) => {
-  try {
-    const response = await axios.put(`${API_BASE_URL}/${endpoint}`, data, config);
-    return response.data;
-  } catch (error) {
-    console.error('Error updating data:', error);
-    throw new Error('Failed to update data');
-  }
-};

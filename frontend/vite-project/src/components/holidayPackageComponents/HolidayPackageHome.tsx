@@ -20,7 +20,6 @@ function HolidayPackage() {
   useEffect(() => {
     const level = localStorage.getItem('accessLevel');
     setAccessLevel(level);
-    console.log(localStorage.getItem('accessLevel'))
   }, []);
 
   const handleLoadHolidayPackages = async () => {

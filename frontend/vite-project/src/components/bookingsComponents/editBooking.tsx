@@ -1,7 +1,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { TextField, Checkbox, FormControlLabel, Button, Select, MenuItem, CircularProgress } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import { fetchData, updateData } from '../../services/dataService';
+import axios from 'axios';
+import { fetchData } from '../../services/dataService';
 
 interface Booking {
     Booking_ID: number;
@@ -14,6 +15,8 @@ interface Activity {
     ID: number;
     Activity_Type: string;
 }
+
+const API_BASE_URL = 'http://localhost:3001';
 
 const EditBookingComponent: React.FC = () => {
     const [bookingId, setBookingId] = useState<number | null>(null);
@@ -83,7 +86,7 @@ const EditBookingComponent: React.FC = () => {
         if (!booking || !bookingId) return;
 
         try {
-            await updateData(`bookings/${bookingId}`, booking);
+            await axios.put(`${API_BASE_URL}/bookings/${bookingId}`, booking);
             console.log('Booking updated successfully!');
         } catch (error) {
             console.error('Error updating booking:', error);
