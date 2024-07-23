@@ -4,6 +4,8 @@ const holidayPackageController = require('../controllers/holidayPackageControlle
 
 router.post('/', holidayPackageController.createHolidayPackage);
 router.get('/', holidayPackageController.getAllHolidayPackages);
+router.get('/:id', holidayPackageController.getHolidayPackageById);
+router.put('/:id', holidayPackageController.updateHolidayPackageById);
 router.delete('/:id', holidayPackageController.deleteHolidayPackage);
 
 module.exports = router;

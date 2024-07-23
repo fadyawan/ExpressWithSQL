@@ -1,11 +1,9 @@
-const db = require('../config/db');
+const db = require('../models');
 
 exports.createCustomer = async (req, res) => {
   try {
-    const newCustomer = req.body;
-    const sql = 'INSERT INTO Customer SET ?';
-    const [result] = await db.query(sql, newCustomer);
-    res.status(201).json(result);
+    const newCustomer = await db.Customer.create(req.body);
+    res.status(201).json(newCustomer);
   } catch (err) {
     console.error('Error creating customer:', err);
     res.status(500).json({ error: 'Database error' });
@@ -15,9 +13,12 @@ exports.createCustomer = async (req, res) => {
 exports.deleteCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    const sql = 'DELETE FROM Customer WHERE ID = ?';
-    const [result] = await db.query(sql, [id]);
-    res.json(result);
+    const result = await db.Customer.destroy({ where: { ID: id } });
+    if (result) {
+      res.json({ message: 'Customer deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'Customer not found' });
+    }
   } catch (err) {
     console.error('Error deleting customer:', err);
     res.status(500).json({ error: 'Database error' });
@@ -26,9 +27,8 @@ exports.deleteCustomer = async (req, res) => {
 
 exports.getAllCustomers = async (req, res) => {
   try {
-    const sql = 'SELECT * FROM Customer';
-    const [results] = await db.query(sql);
-    res.json(results);
+    const customers = await db.Customer.findAll();
+    res.json(customers);
   } catch (err) {
     console.error('Error fetching customers:', err);
     res.status(500).json({ error: 'Database error' });
@@ -38,10 +38,9 @@ exports.getAllCustomers = async (req, res) => {
 exports.getCustomerById = async (req, res) => {
   try {
     const { id } = req.params;
-    const sql = 'SELECT * FROM Customer WHERE ID = ?';
-    const [results] = await db.query(sql, [id]);
-    if (results.length > 0) {
-      res.json(results[0]);
+    const customer = await db.Customer.findByPk(id);
+    if (customer) {
+      res.json(customer);
     } else {
       res.status(404).json({ error: 'Customer not found' });
     }
@@ -54,11 +53,12 @@ exports.getCustomerById = async (req, res) => {
 exports.updateCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedCustomer = req.body;
-    const sql = 'UPDATE Customer SET ? WHERE ID = ?';
-    const [result] = await db.query(sql, [updatedCustomer, id]);
-    if (result.affectedRows > 0) {
-      res.json({ message: 'Customer updated successfully' });
+    const [updated] = await db.Customer.update(req.body, {
+      where: { ID: id }
+    });
+    if (updated) {
+      const updatedCustomer = await db.Customer.findByPk(id);
+      res.json(updatedCustomer);
     } else {
       res.status(404).json({ error: 'Customer not found' });
     }
@@ -67,4 +67,3 @@ exports.updateCustomer = async (req, res) => {
     res.status(500).json({ error: 'Database error' });
   }
 };
-

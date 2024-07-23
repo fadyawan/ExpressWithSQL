@@ -1,11 +1,9 @@
-const db = require('../config/db');
+const db = require('../models');
 
 exports.createActivity = async (req, res) => {
   try {
-    const newActivity = req.body;
-    const sql = 'INSERT INTO Activity SET ?';
-    const [result] = await db.query(sql, newActivity);
-    res.status(201).json(result);
+    const newActivity = await db.Activity.create(req.body);
+    res.status(201).json(newActivity);
   } catch (err) {
     console.error('Error creating activity:', err);
     res.status(500).json({ error: 'Database error' });
@@ -14,9 +12,8 @@ exports.createActivity = async (req, res) => {
 
 exports.getAllActivities = async (req, res) => {
   try {
-    const sql = 'SELECT * FROM Activity';
-    const [results] = await db.query(sql);
-    res.json(results);
+    const activities = await db.Activity.findAll();
+    res.json(activities);
   } catch (err) {
     console.error('Error fetching activities:', err);
     res.status(500).json({ error: 'Database error' });
@@ -26,9 +23,12 @@ exports.getAllActivities = async (req, res) => {
 exports.deleteActivity = async (req, res) => {
   try {
     const { id } = req.params;
-    const sql = 'DELETE FROM Activity WHERE ID = ?';
-    const [result] = await db.query(sql, [id]);
-    res.json(result);
+    const result = await db.Activity.destroy({ where: { ID: id } });
+    if (result) {
+      res.json({ message: 'Activity deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'Activity not found' });
+    }
   } catch (err) {
     console.error('Error deleting activity:', err);
     res.status(500).json({ error: 'Database error' });
@@ -38,10 +38,9 @@ exports.deleteActivity = async (req, res) => {
 exports.getActivityById = async (req, res) => {
   try {
     const { id } = req.params;
-    const sql = 'SELECT * FROM Activity WHERE ID = ?';
-    const [results] = await db.query(sql, [id]);
-    if (results.length > 0) {
-      res.json(results[0]);
+    const activity = await db.Activity.findByPk(id);
+    if (activity) {
+      res.json(activity);
     } else {
       res.status(404).json({ error: 'Activity not found' });
     }
@@ -54,11 +53,12 @@ exports.getActivityById = async (req, res) => {
 exports.updateActivity = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedActivity = req.body;
-    const sql = 'UPDATE Activity SET ? WHERE ID = ?';
-    const [result] = await db.query(sql, [updatedActivity, id]);
-    if (result.affectedRows > 0) {
-      res.json({ message: 'Activity updated successfully' });
+    const [updated] = await db.Activity.update(req.body, {
+      where: { ID: id }
+    });
+    if (updated) {
+      const updatedActivity = await db.Activity.findByPk(id);
+      res.json({ message: 'Activity updated successfully', activity: updatedActivity });
     } else {
       res.status(404).json({ error: 'Activity not found' });
     }

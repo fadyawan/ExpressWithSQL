@@ -1,13 +1,14 @@
-const mysql = require('mysql2');
-
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'F@WaT2012',
-    database: 'hotelservice',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
-module.exports = pool.promise();
+module.exports = {
+    HOST: "localhost",
+    PORT: 3306,
+    USER: "root",
+    PASSWORD: "F@WaT2012",
+    DB: "hotelservice",
+    dialect: "mysql",
+    pool: {
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+    }
+  };
+  

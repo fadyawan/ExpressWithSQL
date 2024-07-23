@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const db = require('./models');
 
 const customerRoutes = require('./routes/customers');
 const hotelRoutes = require('./routes/hotels');
@@ -9,7 +10,7 @@ const locationTypeRoutes = require('./routes/locationTypes');
 const activityRoutes = require('./routes/activities');
 const holidayPackageRoutes = require('./routes/holidayPackages');
 const bookingRoutes = require('./routes/bookings');
-const userRoutes = require('./routes/userRoutes')
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const allowedOrigins = ['https://localhost:3001/'];
@@ -25,7 +26,7 @@ const corsOptions = {
 };
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Hotel Service API');
@@ -39,6 +40,14 @@ app.use('/activities', activityRoutes);
 app.use('/holidayPackages', holidayPackageRoutes);
 app.use('/bookings', bookingRoutes);
 app.use('/user', userRoutes);
+
+db.sequelize.sync()
+  .then(() => {
+    console.log('Database synchronized');
+  })
+  .catch(err => {
+    console.log('Error synchronizing the database:', err);
+  });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

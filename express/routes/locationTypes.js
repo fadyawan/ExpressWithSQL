@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const locationTypeController = require('../controllers/locationTypeController');
+const locationTypeController = require('../controllers/deprecated/locationTypeController');
 
 router.post('/', locationTypeController.createLocationType);
 router.get('/', locationTypeController.getAllLocationTypes);

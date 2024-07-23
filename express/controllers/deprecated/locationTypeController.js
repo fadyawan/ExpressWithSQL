@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 exports.createLocationType = async (req, res) => {
   try {
